@@ -462,6 +462,62 @@
                 break;
         }
     };
+    main.backgroudTranslate = function(config){
+        config = config ? config : {};
+        config.obj = config.obj ? config.obj : false;
+        config.speed = config.speed ? config.speed : 1.5;
+        config.callBack = config.callBack ? config.callBack : false;
+
+        config.widthRate = config.widthRate ? config.widthRate : 0.2;
+        config.heightRate = config.heightRate ? config.heightRate : 0.2;
+
+        config.width = config.width ? config.width : window.innerWidth * (1 + config.widthRate);
+        config.height = config.height ? config.height : window.innerHeight * (1 + config.heightRate);
+
+        config.left = config.left ? config.left : (window.innerWidth - config.width) / 2;
+        config.top = config.top ? config.top : (window.innerHeight - config.height) / 2;
+        config.leftMin = window.innerWidth - config.width;
+        config.leftMax = 0;
+        config.topMin = window.innerHeight - config.height;
+        config.topMax = 0;
+        config.lastGamma = false;
+        config.lastBeta = false;
+        config.offsetGamma = 0;
+        config.offsetBeta = 0;
+        if (config.obj) {
+            config.obj.css("width", config.width + "px").css("height", config.height + "px").css("left", config.left + "px").css("top", config.top + "px");
+            var orient = new Orienter();
+            orient.onOrient = function (event) {
+                if(config.lastGamma){
+
+                    config.offsetGamma = 30 < Math.abs(event.g - config.lastGamma) ? 0 : event.g - config.lastGamma;
+                    config.offsetBeta = 30 < Math.abs(event.b - config.lastBeta) ? 0 : event.b - config.lastBeta;
+
+                    config.left += config.offsetGamma * config.speed;
+                    config.top += config.offsetBeta * config.speed;
+
+                    if(config.callBack)
+                     config.callBack(config.offsetGamma * config.speed, config.offsetBeta * config.speed);
+                    if(config.left <= config.leftMin){
+                        config.left = config.leftMin;
+                    }
+                    if(config.left >= config.leftMax){
+                        config.left = config.leftMax
+                    }
+                    if(config.top<= config.topMin){
+                        config.top = config.topMin;
+                    }
+                    if(config.top >= config.topMax){
+                        config.top = config.topMax
+                    }
+                    config.obj.css("left", config.left + "px").css("top", config.top + "px");
+                }
+                config.lastGamma = event.g;
+                config.lastBeta = event.b
+            };
+            orient.init()
+        }
+    };
     /***********************功能***********************/
 
     /***********************辅助公式***********************/
